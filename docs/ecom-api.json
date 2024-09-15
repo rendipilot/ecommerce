@@ -1,0 +1,334 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "E-Commerce API",
+      "version": "1.0.0",
+      "description": "API untuk aplikasi e-commerce dengan fitur login, register, product list, shopping cart, dan checkout."
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000",
+        "description": "Local development server"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "BearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      },
+      "schemas": {
+        "Product": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "price": {
+              "type": "number",
+              "format": "float"
+            },
+            "category": {
+              "type": "string"
+            },
+            "stock": {
+              "type": "integer"
+            }
+          }
+        },
+        "CartItem": {
+          "type": "object",
+          "properties": {
+            "product_id": {
+              "type": "integer"
+            },
+            "quantity": {
+              "type": "integer"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        },
+        "Order": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "integer"
+            },
+            "user_id": {
+              "type": "integer"
+            },
+            "total_amount": {
+              "type": "number",
+              "format": "float"
+            }
+          }
+        }
+      }
+    },
+    "security": [
+      {
+        "BearerAuth": []
+      }
+    ],
+    "paths": {
+      "/auth/register": {
+        "post": {
+          "summary": "Register new user",
+          "tags": ["Authentication"],
+          "requestBody": {
+            "description": "User registration data",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User registered successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/auth/login": {
+        "post": {
+          "summary": "Login user",
+          "tags": ["Authentication"],
+          "requestBody": {
+            "description": "User login credentials",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials"
+            }
+          }
+        }
+      },
+      "/products/{category}": {
+        "get": {
+          "summary": "Get products by category",
+          "tags": ["Products"],
+          "parameters": [
+            {
+              "name": "category",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of products by category",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Products not found"
+            }
+          }
+        }
+      },
+      "/cart": {
+        "get": {
+          "summary": "Get products in shopping cart",
+          "tags": ["Shopping Cart"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of products in cart",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/CartItem"
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
+          }
+        },
+        "post": {
+          "summary": "Add product to cart",
+          "tags": ["Shopping Cart"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "Product to add to cart",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartItem"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Product added to cart"
+            },
+            "400": {
+              "description": "Invalid product or quantity"
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
+          }
+        }
+      },
+      "/cart/{product_id}": {
+        "delete": {
+          "summary": "Remove product from cart",
+          "tags": ["Shopping Cart"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "product_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Product removed from cart"
+            },
+            "404": {
+              "description": "Product not found in cart"
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
+          }
+        }
+      },
+      "/checkout": {
+        "post": {
+          "summary": "Checkout and create payment",
+          "tags": ["Checkout"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "Payment details and checkout",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "payment_method": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Checkout successful"
+            },
+            "400": {
+              "description": "Invalid payment details"
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
+          }
+        }
+      }
+    }
+  }
+  
