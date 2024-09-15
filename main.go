@@ -15,5 +15,5 @@ func main() {
 	}
 
 	app := routes.SetupRoutes()
-	app.Listen(":8080")
+	app.Listen(":3001")
 }
