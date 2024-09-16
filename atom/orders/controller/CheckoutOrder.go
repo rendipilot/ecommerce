@@ -1,14 +1,14 @@
-package shopping_cart
+package orders
 
 import (
-	shopping_cart "e-commerce-synapsis/atom/shopping-cart"
+	"e-commerce-synapsis/atom/orders"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetCartListByUserId(c *fiber.Ctx) error {
-	var data shopping_cart.GetCartRequest
+func CheckoutOrder(c *fiber.Ctx) error {
+	var data orders.OrderRequest
 
 	inputError := c.BodyParser(&data)
 	if inputError != nil {
@@ -29,20 +29,27 @@ func GetCartListByUserId(c *fiber.Ctx) error {
 		})
 	}
 
-	res, err := shopping_cart.GetCartUseCase(data.UserID)
+	res, err := orders.CheckoutOrderUseCase(data.UserID)
+
+	if err == nil && res == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "status":  400,
+            "data":    fiber.Map{},
+            "message": "No order found",
+        })
+	}
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
 			"data":    fiber.Map{},
-			"message": "Failed to get cart list",
+			"message": "Failed to add order",
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"status":  200,
 		"data":    res,
-		"message": "Get cart successful",
+		"message": "Add order successful",
 	})
-
 }

@@ -14,7 +14,7 @@ func DeleteCartById(c *fiber.Ctx) error {
 	if inputError != nil{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
             "status": 400,
-			"data": nil,
+			"data": fiber.Map{},
 			"message": "Invalid input",
         })
 	}
@@ -22,20 +22,20 @@ func DeleteCartById(c *fiber.Ctx) error {
 	validate := validator.New()
 
 	if err := validate.Struct(data); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  400,
-			"data":    nil,
-			"message": "Invalid input",
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  401,
+			"data":    fiber.Map{},
+			"message": "Invalid credentials",
 		})
 	}
 
 	res, err := shopping_cart.DeleteCartByIdUseCase(data)
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "status": 401,
-			"data": nil,
-			"message": "Failed to get products list",
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "status": 500,
+			"data": fiber.Map{},
+			"message": "Failed to delete cart list",
         })
 	}
 

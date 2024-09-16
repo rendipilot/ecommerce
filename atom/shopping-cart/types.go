@@ -27,6 +27,6 @@ type GetCartResponse struct {
 }
 
 type DeleteCartRequest struct{
-	UserID    int `json:"user_id"`
+	UserID    int `json:"user_id" validate:"required"`
 	CartID int `json:"cart_id" validate:"required"`
 }
