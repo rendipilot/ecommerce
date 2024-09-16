@@ -35,7 +35,7 @@ func UserLogin(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
             "status": 500,
 			"data": nil,
-			"message": "Invalid credentials",
+			"message": err.Error(),
         })
 	}
 
