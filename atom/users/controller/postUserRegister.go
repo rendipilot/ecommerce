@@ -43,7 +43,7 @@ func UserRegister(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
             "status": 500,
 			"data": nil,
-			"message": err.Error(),
+			"message": "failed to register",
         })
 	}
 
