@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"e-commerce-synapsis/atom/products/controller"
 	"e-commerce-synapsis/atom/users/controller"
+	middlewares "e-commerce-synapsis/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -21,6 +23,14 @@ func SetupRoutes() *fiber.App {
 
 	app.Post("/register", users.UserRegister)
 	app.Post("/login", users.UserLogin)
+
+	protected := app.Group("")
+	protected.Use(middlewares.JwtAuthMiddleware())
+
+	productsList := protected.Group("products")
+	{
+		productsList.Post("category", products.GetProductByCategory)
+	}
 
 
 	return app

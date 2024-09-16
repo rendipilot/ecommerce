@@ -2,6 +2,7 @@ package utils_token
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -30,7 +31,7 @@ func GenerateToken(user_id int) (string, error) {
 
 func TokenValid(c *fiber.Ctx) error {
 	tokenString := ExtractToken(c)
-	fmt.Println(tokenString)
+
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -38,6 +39,7 @@ func TokenValid(c *fiber.Ctx) error {
 		return []byte(os.Getenv("API_SECRET")), nil
 	})
 	if err != nil {
+		log.Println("[utils][token][TokeValid] error parsing token : ", err)
 		return err
 	}
 	return nil
@@ -45,10 +47,12 @@ func TokenValid(c *fiber.Ctx) error {
 
 func ExtractToken(c *fiber.Ctx) string {
 	token := c.Query("token")
+	log.Println("token : ", token)
 	if token != "" {
 		return token
 	}
 	bearerToken := c.Get("Authorization")
+	log.Println("token : ", bearerToken)
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		return strings.Split(bearerToken, " ")[1]
 	}

@@ -11,8 +11,10 @@ func JwtAuthMiddleware() fiber.Handler {
 		err := utils_token.TokenValid(c)
 
 		if err != nil {
-			c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Unauthorized",
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"status":  401,
+				"data":    nil,
+				"message": "Unauthorized",
 			})
 		}
 		return c.Next()

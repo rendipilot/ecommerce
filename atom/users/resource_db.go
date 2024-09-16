@@ -4,6 +4,7 @@ import (
 	"e-commerce-synapsis/database"
 	utils_token "e-commerce-synapsis/utils"
 	"errors"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -22,6 +23,7 @@ func UserLoginDB(data UserLoginRequest) (string, error) {
 	err := row.Scan(&response.ID, &response.Name, &response.Email, &response.Password)
 
 	if err != nil {
+		log.Println("[atom][users][UserRegisterDB] error get user data : ", err)
 		return "", err
 	}
 
@@ -30,11 +32,13 @@ func UserLoginDB(data UserLoginRequest) (string, error) {
 	err = bcrypt.CompareHashAndPassword([]byte(response.Password), []byte(data.Password))
 
 	if err != nil {
+		log.Println("[atom][users][UserRegisterDB] error compare password : ", err)
 		return "", err
 	}
 
 	token, err = utils_token.GenerateToken(response.ID)
 	if err!= nil {
+		log.Println("[atom][users][UserRegisterDB] error creating generated token : ", err)
         return "", err
     }
 
@@ -67,6 +71,7 @@ func UserRegisterDB(data UserRegisterRequest) (string, error){
 	_, err = db.Exec(query, data.Name, data.Email, hashedPassword)
 
 	if err != nil {
+		log.Println("[atom][users][UserRegisterDB] error = creating new user")
 		return "", errors.New("registration failed")
 	}
 
