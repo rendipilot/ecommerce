@@ -1,334 +1,714 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "E-Commerce API",
-      "version": "1.0.0",
-      "description": "API untuk aplikasi e-commerce dengan fitur login, register, product list, shopping cart, dan checkout."
-    },
-    "servers": [
-      {
-        "url": "http://localhost:3000",
-        "description": "Local development server"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "E-Commerce API",
+    "version": "1.0.0",
+    "description": "API untuk aplikasi e-commerce dengan fitur login, register, product list, shopping cart, dan checkout."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
-    ],
-    "components": {
-      "securitySchemes": {
-        "BearerAuth": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
+    },
+    "schemas": {
+      "CartItem": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer"
+          },
+          "quantity": {
+            "type": "integer"
+          }
         }
       },
-      "schemas": {
-        "Product": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "name": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "price": {
-              "type": "number",
-              "format": "float"
-            },
-            "category": {
-              "type": "string"
-            },
-            "stock": {
-              "type": "integer"
-            }
-          }
-        },
-        "CartItem": {
-          "type": "object",
-          "properties": {
-            "product_id": {
-              "type": "integer"
-            },
-            "quantity": {
-              "type": "integer"
-            }
-          }
-        },
-        "User": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "name": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "password": {
-              "type": "string"
-            }
-          }
-        },
-        "Order": {
-          "type": "object",
-          "properties": {
-            "order_id": {
-              "type": "integer"
-            },
-            "user_id": {
-              "type": "integer"
-            },
-            "total_amount": {
-              "type": "number",
-              "format": "float"
-            }
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
           }
         }
+      },
+      "AddCart": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer"
+          },
+          "product_id": {
+            "type": "integer"
+          },
+          "quantity": {
+            "type": "integer"
+          }
+        }
+      },
+      "GetCart": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer"
+          }
+        }
+      },
+      "DeleteCart": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer"
+          },
+          "cart_id": {
+            "type": "integer"
+          }
+        }
+      },
+      "ProductCategory": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          }
+        }
+      },
+      "NoOrderFound": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer" },
+          "data": { "type": "object" },
+          "message": { "type": "string", "example": "nor order found" }
+        }
+      },
+      "orderInvalid": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer" },
+          "data": { "type": "object" },
+          "message": { "type": "string", "example": "Invalid input" }
+        }
       }
-    },
-    "security": [
-      {
-        "BearerAuth": []
-      }
-    ],
-    "paths": {
-      "/auth/register": {
-        "post": {
-          "summary": "Register new user",
-          "tags": ["Authentication"],
-          "requestBody": {
-            "description": "User registration data",
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "summary": "Register new user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "description": "User registration data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
               }
             }
-          },
-          "responses": {
-            "201": {
-              "description": "User registered successfully"
-            },
-            "400": {
-              "description": "Invalid input"
-            }
           }
-        }
-      },
-      "/auth/login": {
-        "post": {
-          "summary": "Login user",
-          "tags": ["Authentication"],
-          "requestBody": {
-            "description": "User login credentials",
-            "required": true,
+        },
+        "responses": {
+          "200": {
+            "description": "Register successful",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "email": {
-                      "type": "string"
-                    },
-                    "password": {
-                      "type": "string"
-                    }
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
                   }
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Login successful",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "token": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Invalid credentials"
-            }
-          }
-        }
-      },
-      "/products/{category}": {
-        "get": {
-          "summary": "Get products by category",
-          "tags": ["Products"],
-          "parameters": [
-            {
-              "name": "category",
-              "in": "path",
-              "required": true,
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "List of products by category",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Product"
-                    }
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Products not found"
-            }
-          }
-        }
-      },
-      "/cart": {
-        "get": {
-          "summary": "Get products in shopping cart",
-          "tags": ["Shopping Cart"],
-          "security": [
-            {
-              "BearerAuth": []
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "List of products in cart",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/CartItem"
-                    }
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized"
-            }
-          }
-        },
-        "post": {
-          "summary": "Add product to cart",
-          "tags": ["Shopping Cart"],
-          "security": [
-            {
-              "BearerAuth": []
-            }
-          ],
-          "requestBody": {
-            "description": "Product to add to cart",
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartItem"
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "Product added to cart"
-            },
-            "400": {
-              "description": "Invalid product or quantity"
-            },
-            "401": {
-              "description": "Unauthorized"
-            }
-          }
-        }
-      },
-      "/cart/{product_id}": {
-        "delete": {
-          "summary": "Remove product from cart",
-          "tags": ["Shopping Cart"],
-          "security": [
-            {
-              "BearerAuth": []
-            }
-          ],
-          "parameters": [
-            {
-              "name": "product_id",
-              "in": "path",
-              "required": true,
-              "schema": {
-                "type": "integer"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Product removed from cart"
-            },
-            "404": {
-              "description": "Product not found in cart"
-            },
-            "401": {
-              "description": "Unauthorized"
-            }
-          }
-        }
-      },
-      "/checkout": {
-        "post": {
-          "summary": "Checkout and create payment",
-          "tags": ["Checkout"],
-          "security": [
-            {
-              "BearerAuth": []
-            }
-          ],
-          "requestBody": {
-            "description": "Payment details and checkout",
-            "required": true,
+          "400": {
+            "description": "Invalid Input",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "payment_method": {
-                      "type": "string"
-                    }
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
                   }
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Checkout successful"
-            },
-            "400": {
-              "description": "Invalid payment details"
-            },
-            "401": {
-              "description": "Unauthorized"
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to register",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "description": "User login credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/category": {
+      "get": {
+        "summary": "Get products by category",
+        "tags": ["Products"],
+        "requestBody": {
+          "description": "Product data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get Product successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to get products list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/add": {
+      "post": {
+        "summary": "Add in shopping cart",
+        "tags": ["Shopping Cart"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Add Cart data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add cart successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add cart list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/get-cart": {
+      "post": {
+        "summary": "Get products in shopping cart",
+        "tags": ["Shopping Cart"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Get Cart data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add cart successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add cart list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/delete": {
+      "put": {
+        "summary": "Delete products in shopping cart",
+        "tags": ["Shopping Cart"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Delete Cart data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteCart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add cart successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add cart list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/order/new-order": {
+      "post": {
+        "summary": "Checkout and create payment",
+        "tags": ["Checkout"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Payment details and checkout",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "payment_method": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add Checkout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {"$ref": "#/components/schemas/orderInvalid"},
+                    {"$ref": "#/components/schemas/NoOrderFound"}
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer" },
+                    "data": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
             }
           }
         }
       }
     }
   }
-  
+}

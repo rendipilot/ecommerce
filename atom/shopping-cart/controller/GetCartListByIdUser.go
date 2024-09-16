@@ -14,7 +14,7 @@ func GetCartListByUserId(c *fiber.Ctx) error {
 	if inputError != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
-			"data":    nil,
+			"data":    fiber.Map{},
 			"message": "Invalid input",
 		})
 	}
@@ -24,7 +24,7 @@ func GetCartListByUserId(c *fiber.Ctx) error {
 	if err := validate.Struct(data); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  401,
-			"data":    nil,
+			"data":    fiber.Map{},
 			"message": "Invalid credentials",
 		})
 	}
@@ -34,8 +34,8 @@ func GetCartListByUserId(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"data":    nil,
-			"message": "Failed to get products list",
+			"data":    fiber.Map{},
+			"message": "Failed to get cart list",
 		})
 	}
 

@@ -2,7 +2,6 @@ package orders
 
 import (
 	"e-commerce-synapsis/atom/orders"
-	"log"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +14,7 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	if inputError != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
-			"data":    nil,
+			"data":    fiber.Map{},
 			"message": "Invalid input",
 		})
 	}
@@ -25,7 +24,7 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	if err := validate.Struct(data); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  401,
-			"data":    nil,
+			"data":    fiber.Map{},
 			"message": "Invalid credentials",
 		})
 	}
@@ -33,10 +32,9 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	res, err := orders.CheckoutOrderUseCase(data.UserID)
 
 	if err == nil && res == 0 {
-		log.Println("no contect")
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-            "status":  200,
-            "data":    nil,
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "status":  400,
+            "data":    fiber.Map{},
             "message": "No order found",
         })
 	}
@@ -44,7 +42,7 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  500,
-			"data":    nil,
+			"data":    fiber.Map{},
 			"message": "Failed to add order",
 		})
 	}
@@ -52,6 +50,6 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"status":  200,
 		"data":    res,
-		"message": "successful add order",
+		"message": "Add order successful",
 	})
 }

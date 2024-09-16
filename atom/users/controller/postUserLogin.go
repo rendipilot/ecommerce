@@ -14,7 +14,7 @@ func UserLogin(c *fiber.Ctx) error {
 	if inputError != nil{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
             "status": 400,
-			"data": nil,
+			"data": fiber.Map{},
 			"message": "Invalid input",
         })
 	}
@@ -24,7 +24,7 @@ func UserLogin(c *fiber.Ctx) error {
 	if err := validate.Struct(data); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  401,
-			"data":    nil,
+			"data":    fiber.Map{},
 			"message": "Invalid Credentials",
 		})
 	}
@@ -34,8 +34,8 @@ func UserLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
             "status": 500,
-			"data": nil,
-			"message": "failed to login",
+			"data": fiber.Map{},
+			"message": "Failed to login",
         })
 	}
 
