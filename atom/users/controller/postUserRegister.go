@@ -14,7 +14,7 @@ func UserRegister(c *fiber.Ctx) error {
 	if inputError != nil{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
             "status": 400,
-			"data": nil,
+			"data": fiber.Map{},
 			"message": "Invalid Input",
         })
 	}
@@ -22,20 +22,28 @@ func UserRegister(c *fiber.Ctx) error {
 	validate := validator.New()
 
 	if err := validate.Struct(data); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  400,
-			"data":    nil,
-			"message": "Invalid Input",
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  401,
+			"data":    fiber.Map{},
+			"message": "Invalid credentials",
 		})
 	}
 
 	res, err := users.UserRegisterUseCase(data)
 
+	if res == "exist" {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+            "status": 409,
+            "data": fiber.Map{},
+            "message": "Email already registered",
+        })
+	}
+
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-            "status": 401,
-			"data": nil,
-			"message": err.Error(),
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "status": 500,
+			"data": fiber.Map{},
+			"message": "Failed to register",
         })
 	}
 

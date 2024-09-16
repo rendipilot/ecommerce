@@ -3,6 +3,7 @@ package routes
 import (
 	"e-commerce-synapsis/atom/products/controller"
 	"e-commerce-synapsis/atom/shopping-cart/controller"
+	"e-commerce-synapsis/atom/orders/controller"
 	"e-commerce-synapsis/atom/users/controller"
 	middlewares "e-commerce-synapsis/middleware"
 
@@ -38,6 +39,12 @@ func SetupRoutes() *fiber.App {
 		cart.Post("/add", shopping_cart.AddCart)
 		cart.Post("/get-cart", shopping_cart.GetCartListByUserId)
 		cart.Put("/delete", shopping_cart.DeleteCartById)
+	}
+
+	order := protected.Group("order")
+	{
+		order.Post("/new-order", orders.CheckoutOrder)
+		order.Put("/checkout", orders.PaymentOrder)
 	}
 
 
