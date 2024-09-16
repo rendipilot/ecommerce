@@ -1,0 +1,1 @@
+alter table carts add column is_active int DEFAULT 1
