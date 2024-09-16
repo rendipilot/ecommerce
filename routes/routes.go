@@ -44,6 +44,7 @@ func SetupRoutes() *fiber.App {
 	order := protected.Group("order")
 	{
 		order.Post("/new-order", orders.CheckoutOrder)
+		order.Put("/checkout", orders.PaymentOrder)
 	}
 
 

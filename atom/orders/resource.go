@@ -5,3 +5,9 @@ func CheckoutOrderUseCase(id int)(int, error){
 
     return res, err
 }
+
+func PaymentOrderUseCase(data PaymentRequest)(string, error){
+	res, err := PaymentOrderDB(data)
+
+    return res, err
+}

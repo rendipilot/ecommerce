@@ -27,3 +27,8 @@ type OrderRequest struct {
 type OrderResponse struct {
 	OrderID int `json:"order_id"`
 }
+
+type PaymentRequest struct{
+    Method string `json:"method" validate:"required"`
+    OrderID int `json:"order_id" validate:"required"`
+}

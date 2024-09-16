@@ -81,3 +81,18 @@ func CheckoutOrderDB(userId int) (int, error) {
 
 	return orderId, nil
 }
+
+func PaymentOrderDB(data PaymentRequest)(string, error){
+	db := database.PgOpenConnection()
+    defer db.Close()
+
+    query := `UPDATE orders SET payment = $1, payment_status = 0 WHERE id = $2`
+    _, err := db.Exec(query, &data.Method, &data.OrderID)
+
+    if err!= nil {
+        log.Println("[atom][orders][resource_db][PaymentOrder] error updating payment method : ", err)
+        return "", err
+    }
+
+    return "success", nil
+}
