@@ -12,10 +12,10 @@ func UserLogin(c *fiber.Ctx) error {
 
 	inputError := c.BodyParser(&data)
 	if inputError != nil{
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-            "status": 401,
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "status": 400,
 			"data": nil,
-			"message": "Invalid credentials",
+			"message": "Invalid input",
         })
 	}
 
@@ -25,7 +25,7 @@ func UserLogin(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
 			"data":    nil,
-			"message": "Validation failed",
+			"message": "Invalid input",
 		})
 	}
 

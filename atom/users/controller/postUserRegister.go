@@ -15,7 +15,7 @@ func UserRegister(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
             "status": 400,
 			"data": nil,
-			"message": "Invalid credentials",
+			"message": "Invalid Input",
         })
 	}
 
@@ -25,7 +25,7 @@ func UserRegister(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  400,
 			"data":    nil,
-			"message": "Validation failed",
+			"message": "Invalid Input",
 		})
 	}
 

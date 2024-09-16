@@ -67,7 +67,7 @@ func UserRegisterDB(data UserRegisterRequest) (string, error){
 	_, err = db.Exec(query, data.Name, data.Email, hashedPassword)
 
 	if err != nil {
-		return "", errors.New("email is already registered")
+		return "", errors.New("registration failed")
 	}
 
 	return data.Name, nil
