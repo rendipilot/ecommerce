@@ -25,6 +25,8 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 
+COPY .env .env
+
 # Expose port 3001 to the outside world
 EXPOSE 3001
 

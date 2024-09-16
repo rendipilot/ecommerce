@@ -23,7 +23,7 @@ func UserLoginDB(data UserLoginRequest) (string, error) {
 	err := row.Scan(&response.ID, &response.Name, &response.Email, &response.Password)
 
 	if err != nil {
-		log.Println("[atom][users][UserRegisterDB] error get user data : ", err)
+		log.Println("[atom][users][UserLoginDB] error get user data : ", err)
 		return "", err
 	}
 
