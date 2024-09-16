@@ -23,10 +23,10 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	validate := validator.New()
 
 	if err := validate.Struct(data); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  400,
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  401,
 			"data":    nil,
-			"message": "Invalid input",
+			"message": "Invalid credentials",
 		})
 	}
 
@@ -42,8 +42,8 @@ func CheckoutOrder(c *fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  400,
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  500,
 			"data":    nil,
 			"message": "Failed to add order",
 		})
