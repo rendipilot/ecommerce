@@ -25,11 +25,19 @@ func UserRegister(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  401,
 			"data":    nil,
-			"message": "Invalid Credentials",
+			"message": "Invalid credentials",
 		})
 	}
 
 	res, err := users.UserRegisterUseCase(data)
+
+	if res == "exist" {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+            "status": 409,
+            "data": nil,
+            "message": "Email already registered",
+        })
+	}
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

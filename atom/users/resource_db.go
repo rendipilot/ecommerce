@@ -63,7 +63,7 @@ func UserRegisterDB(data UserRegisterRequest) (string, error){
 	err = row.Scan(&email)
 
 	if err == nil {
-        return "", errors.New("email is already registered")
+        return "exist", nil
     }
 
 	query := `INSERT INTO users (name, email, password) VALUES ($1, $2, $3)`
